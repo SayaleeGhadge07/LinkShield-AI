@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>LinkShield AI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Poppins,sans-serif;
+}
+
+body{
+
+background:linear-gradient(135deg,#0f172a,#111827,#020617);
+
+min-height:100vh;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+padding:30px;
+
+color:white;
+
+}
+
+.container{
+
+width:800px;
+
+max-width:95%;
+
+background:rgba(255,255,255,.08);
+
+backdrop-filter:blur(18px);
+
+border-radius:22px;
+
+padding:40px;
+
+box-shadow:0 20px 60px rgba(0,0,0,.4);
+
+}
+
+h1{
+
+font-size:42px;
+
+margin-bottom:10px;
+
+text-align:center;
+
+}
+
+.subtitle{
+
+text-align:center;
+
+opacity:.8;
+
+margin-bottom:35px;
+
+}
+
+.inputBox{
+
+display:flex;
+
+gap:15px;
+
+flex-wrap:wrap;
+
+}
+
+input{
+
+flex:1;
+
+padding:16px;
+
+border:none;
+
+border-radius:12px;
+
+font-size:16px;
+
+outline:none;
+
+background:#ffffff15;
+
+color:white;
+
+}
+
+input::placeholder{
+
+color:#ccc;
+
+}
+
+button{
+
+padding:16px 30px;
+
+border:none;
+
+border-radius:12px;
+
+background:#3b82f6;
+
+color:white;
+
+font-size:16px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+transition:.3s;
+
+}
+
+button:hover{
+
+transform:translateY(-2px);
+
+background:#2563eb;
+
+}
+
+#loading{
+
+display:none;
+
+text-align:center;
+
+margin-top:25px;
+
+font-size:18px;
+
+}
+
+.result{
+
+margin-top:30px;
+
+background:#ffffff10;
+
+padding:25px;
+
+border-radius:18px;
+
+display:none;
+
+white-space:pre-wrap;
+
+line-height:1.7;
+
+}
+
+.footer{
+
+text-align:center;
+
+margin-top:25px;
+
+opacity:.7;
+
+font-size:14px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🛡️ LinkShield AI</h1>
+<p style="text-align:center;color:#bdbdbd;margin-top:15px;margin-bottom:25px;">
+Detect phishing and suspicious websites using AI-powered URL analysis.
+</p>
+<p class="subtitle">
+AI Powered Phishing URL Detector
+</p>
+
+<div class="inputBox">
+
+<input
+id="url"
+placeholder="Paste website URL here..."
+>
+
+<button onclick="analyzeURL()">
+
+Analyze
+<p style="margin-top:15px;text-align:center;font-size:14px;color:#9ca3af;">
+Examples:
+<br>
+https://google.com
+<br>
+https://amaz0n-login.xyz
+<br>
+https://paypal-login-security.top
+</p>
+
+</button>
+
+</div>
+
+<div id="loading">
+
+🔍 🛡️ LinkShield AI is scanning this website......
+
+</div>
+
+<div
+id="result"
+class="result">
+</div>
+
+<div class="footer">
+
+Powered by n8n • Groq • JavaScript • HTML/CSS
+
+</div>
+
+</div>
+
+<script>
+
+const WEBHOOK="https://saylu87.app.n8n.cloud/webhook/c9f99cff-05c7-40bc-b9b4-b4fc936d0023";
+
+async function analyzeURL(){
+
+const url=document.getElementById("url").value.trim();
+
+if(url===""){
+
+alert("Please enter a website URL");
+
+return;
+
+}
+
+document.getElementById("loading").style.display="block";
+
+document.getElementById("result").style.display="none";
+
+try{
+
+const response=await fetch(
+
+WEBHOOK+"?url="+encodeURIComponent(url)
+
+);
+
+const data = await response.json();
+
+document.getElementById("loading").style.display="none";
+
+const result=document.getElementById("result");
+
+result.style.display="block";
+
+
+let responseText = data.text;
+
+let badge = "";
+
+if (responseText.toLowerCase().includes("high")) {
+    badge = `<div style="
+    background:#ff4d4d;
+    padding:12px;
+    border-radius:10px;
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:20px;
+    text-align:center;">
+    🔴 HIGH RISK
+    </div>`;
+}
+else if (responseText.toLowerCase().includes("medium")) {
+    badge = `<div style="
+    background:#ffb300;
+    padding:12px;
+    border-radius:10px;
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:20px;
+    text-align:center;">
+    🟡 MEDIUM RISK
+    </div>`;
+}
+else{
+    badge = `<div style="
+    background:#2ecc71;
+    padding:12px;
+    border-radius:10px;
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:20px;
+    text-align:center;">
+    🟢 SAFE
+    </div>`;
+}
+
+result.innerHTML = badge + "<pre style='white-space:pre-wrap;font-family:Poppins'>" + responseText + "</pre>";
+
+}
+
+catch(error){
+
+document.getElementById("loading").style.display="none";
+
+document.getElementById("result").style.display="block";
+
+document.getElementById("result").innerHTML=
+
+"❌ Unable to connect to AI backend.<br><br>"+error;
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
+
