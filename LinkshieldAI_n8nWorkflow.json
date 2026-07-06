@@ -1,0 +1,154 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        352,
+        160
+      ],
+      "id": "d5ffe123-e0a4-4302-9a6d-d44d0bee7bb8",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "bWp105VITt1XpIIr",
+          "name": "Groq account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are LinkShield AI, an AI cybersecurity assistant.\n\nAnalyze ONLY the given URL.\n\nYou MUST respond with ONLY valid JSON.\n\nDo NOT write explanations outside the JSON.\nDo NOT use markdown.\nDo NOT add introductory text.\n\nOutput format:\n\n{\n  \"risk\": \"High\",\n  \"summary\": \"One sentence summary\",\n  \"reasons\": [\n    \"Reason 1\",\n    \"Reason 2\",\n    \"Reason 3\"\n  ],\n  \"recommendation\": \"One sentence recommendation\"\n}\n\nAnalyze this URL:\n\n{{ $json.url }}\n\n",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        432,
+        0
+      ],
+      "id": "1150a4b0-6456-4cb4-9290-4d200ab447d7",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fd8a1e85-d64a-4636-9f5f-329847ae5d60",
+              "name": "url",
+              "value": "={{ $json.query.url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "8e719e2b-77d4-4a28-87f8-e1939dfdb12b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "path": "c9f99cff-05c7-40bc-b9b4-b4fc936d0023",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        0
+      ],
+      "id": "e59a5a60-8f3a-414b-81e7-9d8273b08a67",
+      "name": "Webhook",
+      "webhookId": "c9f99cff-05c7-40bc-b9b4-b4fc936d0023"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        784,
+        0
+      ],
+      "id": "2a4aa154-3b44-48ef-aa73-b40a6cf2ca8e",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "fa88e5d8-69cc-465a-b81b-befa226a614f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f60b6468be5cd1a08e1868686b5cd76009b4e1865bae4dec8b4d828eb8d5fb7f"
+  },
+  "nodeGroups": [],
+  "id": "m1Dxb9YVBWt8GBPj",
+  "tags": []
+}
